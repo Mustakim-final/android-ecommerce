@@ -128,7 +128,7 @@ public class LoginActivity extends AppCompatActivity {
                             if (prentDbName.equals("Admins")){
                                 Toast.makeText(LoginActivity.this, "Admin Login Successfully", Toast.LENGTH_SHORT).show();
                                 progressDialog.dismiss();
-                                Intent intent=new Intent(LoginActivity.this,AdminAddNewProductActivity.class);
+                                Intent intent=new Intent(LoginActivity.this,AdminCategoryActivity.class);
                                 startActivity(intent);
                             }else if (prentDbName.equals("Users")){
                                 Toast.makeText(LoginActivity.this, "Login Successfully", Toast.LENGTH_SHORT).show();
