@@ -145,7 +145,8 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
         btnCart.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
+                Intent intent=new Intent(HomeActivity.this,CartActivity.class);
+                startActivity(intent);
             }
         });
 
@@ -256,10 +257,8 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
         if (item.getItemId()==R.id.nav_logout){
-            Paper.book().destroy();
-            Intent intent=new Intent(HomeActivity.this,MainActivity.class);
-            startActivity(intent);
-            finish();
+           FirebaseAuth.getInstance().signOut();
+           finish();
         }
         return false;
     }
