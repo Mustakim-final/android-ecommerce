@@ -14,4 +14,20 @@
 
     <string name="open">Open</string>
     <string name="close">Close</string>
+
+    <string-array name="category">
+        <item>T-Shirts</item>
+        <item>Sports T-Shirt</item>
+        <item>Female Dress</item>
+        <item>Sweater</item>
+        <item>Glasses</item>
+        <item>Hats</item>
+        <item>Purses Bags</item>
+        <item>Shoes</item>
+        <item>Head Phones</item>
+        <item>Laptops</item>
+        <item>Watches</item>
+        <item>Mobiles</item>
+    </string-array>
+
 </resources>

@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:gravity="center"
+    android:clipToPadding="false"
+    android:layout_marginTop="10dp"
+    android:layout_marginLeft="5dp"
+    android:layout_marginRight="5dp"
+    android:layout_height="wrap_content">
+
+    <androidx.cardview.widget.CardView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:clickable="false"
+        android:foreground="?android:attr/selectableItemBackground"
+        >
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="center"
+            >
+
+            <ImageView
+                android:id="@+id/productImage_ID"
+                android:layout_width="150dp"
+                android:src="@drawable/cart"
+                android:layout_height="150dp">
+
+            </ImageView>
+
+
+            <TextView
+                android:id="@+id/productName_ID"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/productImage_ID"
+                android:text="Name"
+                android:textAppearance="?android:textAppearanceLarge"
+                android:textSize="15sp">
+
+            </TextView>
+
+            <TextView
+                android:id="@+id/product_description_ID"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/productName_ID"
+                android:text="description"
+                android:padding="5dp"
+                android:textAppearance="?android:textAppearanceLarge"
+                android:textSize="15sp">
+
+            </TextView>
+
+            <TextView
+                android:id="@+id/productPrize_ID"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/product_description_ID"
+                android:layout_marginLeft="20dp"
+                android:layout_marginTop="10dp"
+                android:text="Price"
+                android:textAppearance="?android:textAppearanceLarge"
+                android:textSize="15sp">
+
+            </TextView>
+
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/ic_baseline_shopping_cart_24"
+                android:layout_toRightOf="@+id/productPrize_ID"
+                android:layout_below="@+id/product_description_ID"
+                android:layout_marginTop="10dp"
+                android:layout_marginLeft="60dp"
+                android:id="@+id/addCharBtn_ID">
+
+            </ImageView>
+
+        </RelativeLayout>
+
+    </androidx.cardview.widget.CardView>
+
+
+</LinearLayout>

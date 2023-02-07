@@ -2,15 +2,16 @@ package com.example.ecommerce.Model;
 
 public class Users {
 
-    private String name,phone,password;
+    private String name,gmail,id,imageUrl;
 
     public Users() {
     }
 
-    public Users(String name, String phone, String password) {
+    public Users(String name, String gmail, String id, String imageUrl) {
         this.name = name;
-        this.phone = phone;
-        this.password = password;
+        this.gmail = gmail;
+        this.id = id;
+        this.imageUrl = imageUrl;
     }
 
     public String getName() {
@@ -21,19 +22,27 @@ public class Users {
         this.name = name;
     }
 
-    public String getPhone() {
-        return phone;
+    public String getGmail() {
+        return gmail;
     }
 
-    public void setPhone(String phone) {
-        this.phone = phone;
+    public void setGmail(String gmail) {
+        this.gmail = gmail;
     }
 
-    public String getPassword() {
-        return password;
+    public String getId() {
+        return id;
     }
 
-    public void setPassword(String password) {
-        this.password = password;
+    public void setId(String id) {
+        this.id = id;
+    }
+
+    public String getImageUrl() {
+        return imageUrl;
+    }
+
+    public void setImageUrl(String imageUrl) {
+        this.imageUrl = imageUrl;
     }
 }

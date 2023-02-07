@@ -7,6 +7,7 @@ import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
+import android.util.Patterns;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -14,6 +15,9 @@ import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.AuthResult;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -25,8 +29,12 @@ import java.util.HashMap;
 public class RegisterActivity extends AppCompatActivity {
 
     Button createAccountButton;
-    EditText inputName,inputPhoneNumber,inputPassword;
+    EditText inputName,inputEmail,inputPassword;
     ProgressDialog progressDialog;
+
+    FirebaseAuth firebaseAuth;
+    DatabaseReference reference;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -34,89 +42,92 @@ public class RegisterActivity extends AppCompatActivity {
 
         createAccountButton=findViewById(R.id.register_btn);
         inputName=findViewById(R.id.register_username_input);
-        inputPhoneNumber=findViewById(R.id.register_phone_number_input);
+        inputEmail=findViewById(R.id.register_email_input);
         inputPassword=findViewById(R.id.register_password_input);
 
         progressDialog=new ProgressDialog(this);
+        firebaseAuth=FirebaseAuth.getInstance();
 
 
         createAccountButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                CreateAccount();
-            }
+                String username=inputName.getText().toString().trim();
+                String gmail=inputEmail.getText().toString().trim();
+                String password=inputPassword.getText().toString().trim();
 
+                if (username.isEmpty()){
+                    inputName.setError("Enter User Name!!");
+                    inputName.requestFocus();
+                }else if (gmail.isEmpty()){
+                    inputEmail.setError("Enter Gmail !!");
+                    inputEmail.requestFocus();
+                }else if (!Patterns.EMAIL_ADDRESS.matcher(gmail).matches()){
+                    inputEmail.setError("Enter Valid gmail !!");
+                    inputEmail.requestFocus();
+                }else if (password.isEmpty()){
+                    inputPassword.setError("Enter Password !!");
+                    inputPassword.requestFocus();
+                }else if (password.length()<6){
+                    inputPassword.setError("Enter 6 digit password !!");
+                    inputPassword.requestFocus();
+                }else {
+                    progressDialog.show();
+                    validatePhoneNumber(username,gmail,password);
+                }
+            }
 
         });
 
         
     }
 
-    private void CreateAccount() {
-        String name=inputName.getText().toString();
-        String phone=inputPhoneNumber.getText().toString();
-        String password=inputPassword.getText().toString();
 
-        if (TextUtils.isEmpty(name)){
-            Toast.makeText(this, "Please write your name...", Toast.LENGTH_SHORT).show();
-        }else if (TextUtils.isEmpty(phone)){
-            Toast.makeText(this, "Please write your phone...", Toast.LENGTH_SHORT).show();
-        }else if (TextUtils.isEmpty(password)){
-            Toast.makeText(this, "Please write your password...", Toast.LENGTH_SHORT).show();
-        }else {
-            progressDialog.setTitle("Create Account");
-            progressDialog.setMessage("Please wait,while we are checking the credentials");
-            progressDialog.setCanceledOnTouchOutside(false);
-            progressDialog.show();
 
-            validatePhoneNumber(name,phone,password);
-        }
-    }
+    private void validatePhoneNumber(String username, String gmail, String password) {
 
-    private void validatePhoneNumber(String name, String phone, String password) {
 
-        final DatabaseReference RootRef;
-        RootRef= FirebaseDatabase.getInstance().getReference();
-
-        RootRef.addListenerForSingleValueEvent(new ValueEventListener() {
+        firebaseAuth.createUserWithEmailAndPassword(gmail,password).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
             @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                if (!snapshot.child("Users").child(phone).exists()){
-                    HashMap<String,Object> hashMap=new HashMap<>();
-                    hashMap.put("phone",phone);
-                    hashMap.put("password",password);
-                    hashMap.put("name",name);
+            public void onComplete(@NonNull Task<AuthResult> task) {
+                if (task.isSuccessful()){
+                    FirebaseUser firebaseUser=firebaseAuth.getCurrentUser();
+                    String userID=firebaseUser.getUid();
 
-                    RootRef.child("Users").child(phone).updateChildren(hashMap)
-                            .addOnCompleteListener(new OnCompleteListener<Void>() {
-                                @Override
-                                public void onComplete(@NonNull Task<Void> task) {
-                                    if (task.isSuccessful()){
-                                        Toast.makeText(RegisterActivity.this, "Account create successfully", Toast.LENGTH_SHORT).show();
-                                        progressDialog.dismiss();
-                                        Intent intent=new Intent(RegisterActivity.this,LoginActivity.class);
-                                        startActivity(intent);
-                                    }else {
-                                        progressDialog.dismiss();
-                                        Toast.makeText(RegisterActivity.this, "Network error:please try again after sometime...", Toast.LENGTH_SHORT).show();
-                                    }
-                                }
-                            });
+                    reference= FirebaseDatabase.getInstance().getReference("Users").child(userID);
+
+                    HashMap<String,Object> hashMap=new HashMap<>();
+                    hashMap.put("name",username);
+                    hashMap.put("gmail",gmail);
+                    hashMap.put("id",userID);
+                    hashMap.put("imageUrl","imageUrl");
+
+                    reference.setValue(hashMap).addOnCompleteListener(new OnCompleteListener<Void>() {
+                        @Override
+                        public void onComplete(@NonNull Task<Void> task) {
+                            if (task.isSuccessful()){
+                                Toast.makeText(RegisterActivity.this, "Account create successfully", Toast.LENGTH_SHORT).show();
+                                progressDialog.dismiss();
+                                Intent intent=new Intent(RegisterActivity.this,HomeActivity.class);
+                                startActivity(intent);
+                            }else {
+                                progressDialog.dismiss();
+                                Toast.makeText(RegisterActivity.this, "Network error:please try again after sometime...", Toast.LENGTH_SHORT).show();
+                            }
+                        }
+                    });
+
                 }else {
-                    Toast.makeText(RegisterActivity.this, "This"+phone+"already exists", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(RegisterActivity.this, "This"+gmail+"already exists", Toast.LENGTH_SHORT).show();
                     progressDialog.dismiss();
-                    Toast.makeText(RegisterActivity.this, "Please try again another number", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(RegisterActivity.this, "Please try again another email", Toast.LENGTH_SHORT).show();
 
                     Intent intent=new Intent(RegisterActivity.this,MainActivity.class);
                     startActivity(intent);
                 }
             }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-
-            }
         });
+
     }
 
 

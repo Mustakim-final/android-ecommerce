@@ -18,6 +18,8 @@ import com.example.ecommerce.Model.Users;
 import com.example.ecommerce.Prevalent.Prevalent;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.AuthResult;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -31,13 +33,17 @@ import io.paperdb.Paper;
 public class LoginActivity extends AppCompatActivity {
 
     Button loginButton;
-    EditText inputPhoneNumber,inputPassword;
+    EditText inputEmail,inputPassword;
     ProgressDialog progressDialog;
     CheckBox checkBoxRememberMe;
 
     TextView AdminLink,NotAdminLink;
 
     private String prentDbName="Users";
+
+    FirebaseAuth firebaseAuth;
+    DatabaseReference reference;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -45,12 +51,14 @@ public class LoginActivity extends AppCompatActivity {
 
         loginButton=findViewById(R.id.login_btn);
 
-        inputPhoneNumber=findViewById(R.id.login_phone_number_input);
+        inputEmail=findViewById(R.id.login_email_input);
         inputPassword=findViewById(R.id.login_password_input);
         checkBoxRememberMe=findViewById(R.id.remember_me_chkb);
 
         AdminLink=findViewById(R.id.admin_panel_link);
         NotAdminLink=findViewById(R.id.not_admin_panel_link);
+
+        firebaseAuth=FirebaseAuth.getInstance();
 
         Paper.init(this);
 
@@ -89,10 +97,10 @@ public class LoginActivity extends AppCompatActivity {
 
     private void LoginAccount() {
 
-        String phone=inputPhoneNumber.getText().toString();
+        String email=inputEmail.getText().toString();
         String password=inputPassword.getText().toString();
 
-       if (TextUtils.isEmpty(phone)){
+       if (TextUtils.isEmpty(email)){
             Toast.makeText(this, "Please write your phone...", Toast.LENGTH_SHORT).show();
         }else if (TextUtils.isEmpty(password)){
             Toast.makeText(this, "Please write your password...", Toast.LENGTH_SHORT).show();
@@ -102,57 +110,78 @@ public class LoginActivity extends AppCompatActivity {
             progressDialog.setCanceledOnTouchOutside(false);
             progressDialog.show();
 
-           AllowAccessAccount(phone,password);
+           //AllowAccessAccount(email,password);
+
+           signIn(email,password);
         }
     }
 
-    private void AllowAccessAccount(String phone, String password) {
-
-        if (checkBoxRememberMe.isChecked()){
-            Paper.book().write(Prevalent.UserPhoneKey,phone);
-            Paper.book().write(Prevalent.UserPasswordKey,password);
-        }
-
-        final DatabaseReference RootRef;
-        RootRef= FirebaseDatabase.getInstance().getReference();
-
-        RootRef.addListenerForSingleValueEvent(new ValueEventListener() {
+    private void signIn(String email, String password) {
+        firebaseAuth.signInWithEmailAndPassword(email,password).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
             @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                if (snapshot.child(prentDbName).child(phone).exists()){
+            public void onComplete(@NonNull Task<AuthResult> task) {
+                if (task.isSuccessful()){
 
-                    Users userData=snapshot.child(prentDbName).child(phone).getValue(Users.class);
-
-                    if (userData.getPhone().equals(phone)){
-                        if (userData.getPassword().equals(password)){
-                            if (prentDbName.equals("Admins")){
-                                Toast.makeText(LoginActivity.this, "Admin Login Successfully", Toast.LENGTH_SHORT).show();
-                                progressDialog.dismiss();
-                                Intent intent=new Intent(LoginActivity.this,AdminCategoryActivity.class);
-                                startActivity(intent);
-                            }else if (prentDbName.equals("Users")){
-                                Toast.makeText(LoginActivity.this, "Login Successfully", Toast.LENGTH_SHORT).show();
-                                progressDialog.dismiss();
-                                Intent intent=new Intent(LoginActivity.this,HomeActivity.class);
-                                startActivity(intent);
-                            }
-                        }else {
-                            progressDialog.dismiss();
-                            Toast.makeText(LoginActivity.this, "Password is incorrect", Toast.LENGTH_SHORT).show();
-                        }
-                    }
-
+                    Toast.makeText(LoginActivity.this, "Login Successfully", Toast.LENGTH_SHORT).show();
+                    progressDialog.dismiss();
+                    Intent intent=new Intent(LoginActivity.this,HomeActivity.class);
+                    startActivity(intent);
                 }else {
                     progressDialog.dismiss();
-                    Toast.makeText(LoginActivity.this, "This number "+phone+" does not exists", Toast.LENGTH_SHORT).show();
-
+                    Toast.makeText(LoginActivity.this, "This number "+email+" does not exists", Toast.LENGTH_SHORT).show();
                 }
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-
             }
         });
     }
+
+//    private void AllowAccessAccount(String phone, String password) {
+//
+//        if (checkBoxRememberMe.isChecked()){
+//            Paper.book().write(Prevalent.UserPhoneKey,phone);
+//            Paper.book().write(Prevalent.UserPasswordKey,password);
+//        }
+//
+//        final DatabaseReference RootRef;
+//        RootRef= FirebaseDatabase.getInstance().getReference();
+//
+//        RootRef.addListenerForSingleValueEvent(new ValueEventListener() {
+//            @Override
+//            public void onDataChange(@NonNull DataSnapshot snapshot) {
+//                if (snapshot.child(prentDbName).child(phone).exists()){
+//
+//                    Users userData=snapshot.child(prentDbName).child(phone).getValue(Users.class);
+//
+//                    if (userData.getPhone().equals(phone)){
+//                        if (userData.getPassword().equals(password)){
+//                            if (prentDbName.equals("Admins")){
+//                                Toast.makeText(LoginActivity.this, "Admin Login Successfully", Toast.LENGTH_SHORT).show();
+//                                progressDialog.dismiss();
+//                                Intent intent=new Intent(LoginActivity.this,AdminCategoryActivity.class);
+//                                startActivity(intent);
+//                            }else if (prentDbName.equals("Users")){
+//                                Toast.makeText(LoginActivity.this, "Login Successfully", Toast.LENGTH_SHORT).show();
+//                                progressDialog.dismiss();
+//                                Intent intent=new Intent(LoginActivity.this,HomeActivity.class);
+//                                Prevalent.currentOnlineUser=userData;
+//                                startActivity(intent);
+//                            }
+//                        }else {
+//                            progressDialog.dismiss();
+//                            Toast.makeText(LoginActivity.this, "Password is incorrect", Toast.LENGTH_SHORT).show();
+//                        }
+//                    }
+//
+//                }else {
+//                    progressDialog.dismiss();
+//                    Toast.makeText(LoginActivity.this, "This number "+phone+" does not exists", Toast.LENGTH_SHORT).show();
+//
+//                }
+//            }
+//
+//            @Override
+//            public void onCancelled(@NonNull DatabaseError error) {
+//
+//            }
+//        });
+//    }
 }
