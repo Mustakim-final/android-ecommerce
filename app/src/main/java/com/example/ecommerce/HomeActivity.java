@@ -27,6 +27,7 @@ import com.example.ecommerce.Model.Product;
 import com.example.ecommerce.Model.Users;
 import com.example.ecommerce.Prevalent.Prevalent;
 import com.example.ecommerce.Util.SpaceItemDecoration;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.navigation.NavigationView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -51,6 +52,7 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
     Toolbar toolbar;
     DrawerLayout drawerLayout;
     ActionBarDrawerToggle toggle;
+    FloatingActionButton fl;
 
     RecyclerView categoryRecycler,productRecycler;
 
@@ -111,6 +113,18 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
         categoryRecycler.setLayoutManager(new LinearLayoutManager(HomeActivity.this,LinearLayoutManager.HORIZONTAL,false));
         categoryRecycler.setAdapter(categoryAdapter);
 
+        categoryAdapter.setOnclickListener(new CategoryAdapter.onClickListener() {
+            @Override
+            public void click(int position,String category) {
+                //Toast.makeText(ShopActivity.this, ""+category, Toast.LENGTH_SHORT).show();
+
+                Intent intent=new Intent(HomeActivity.this, CategoryActivity.class);
+                intent.putExtra("category",category);
+                startActivity(intent);
+
+            }
+        });
+
         drawerLayout=findViewById(R.id.drawer_ID);
 
 
@@ -143,6 +157,15 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
 
         btnCart=findViewById(R.id.btnCart);
         btnCart.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent=new Intent(HomeActivity.this,CartActivity.class);
+                startActivity(intent);
+            }
+        });
+
+        fl=findViewById(R.id.cart_id);
+        fl.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent intent=new Intent(HomeActivity.this,CartActivity.class);
@@ -259,6 +282,9 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
         if (item.getItemId()==R.id.nav_logout){
            FirebaseAuth.getInstance().signOut();
            finish();
+        }else if (item.getItemId()==R.id.nav_cart){
+            Intent intent=new Intent(HomeActivity.this,CartActivity.class);
+            startActivity(intent);
         }
         return false;
     }

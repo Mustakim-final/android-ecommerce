@@ -20,7 +20,7 @@ public class CategoryAdapter extends RecyclerView.Adapter<CategoryAdapter.MyHodl
     Context context;
     String[] title;
     int[] image;
-
+    public onClickListener listener;
     public CategoryAdapter(Context context, String[] title, int[] image) {
         this.context = context;
         this.title = title;
@@ -45,13 +45,34 @@ public class CategoryAdapter extends RecyclerView.Adapter<CategoryAdapter.MyHodl
         return title.length;
     }
 
-    public class MyHodlder extends RecyclerView.ViewHolder{
+    public class MyHodlder extends RecyclerView.ViewHolder implements View.OnClickListener{
         TextView categoryText;
         ImageView imageView;
         public MyHodlder(@NonNull View itemView) {
             super(itemView);
             imageView=itemView.findViewById(R.id.categoryImage);
             categoryText=itemView.findViewById(R.id.categoryName);
+            itemView.setOnClickListener(this);
         }
+
+        @Override
+        public void onClick(View v) {
+            if (listener!=null){
+                int position=getAdapterPosition();
+                String category=title[position];
+
+                if (position!=RecyclerView.NO_POSITION){
+                    listener.click(position,category);
+                }
+            }
+        }
+    }
+
+    public interface onClickListener{
+        void click(int position,String category);
+    }
+
+    public void setOnclickListener(onClickListener listener){
+        this.listener=listener;
     }
 }

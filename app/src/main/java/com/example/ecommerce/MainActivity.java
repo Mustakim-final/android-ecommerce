@@ -12,6 +12,7 @@ import android.widget.Toast;
 
 import com.example.ecommerce.Model.Users;
 import com.example.ecommerce.Prevalent.Prevalent;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -26,6 +27,7 @@ public class MainActivity extends AppCompatActivity {
 
     private Button joinNowButton,loginButton;
     private String prentDbName="Users";
+
 
     @Override
     protected void onStart() {

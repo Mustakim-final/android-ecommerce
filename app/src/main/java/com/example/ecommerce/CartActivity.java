@@ -6,7 +6,9 @@ import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.content.Intent;
 import android.os.Bundle;
+import android.view.View;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -74,6 +76,15 @@ public class CartActivity extends AppCompatActivity implements ICartListener {
         total=findViewById(R.id.total);
         fl=findViewById(R.id.checkOutBtn);
         badge=findViewById(R.id.badge);
+
+        fl.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent=new Intent(CartActivity.this,CheckOutActivity.class);
+                intent.putExtra("total",total.getText().toString());
+                startActivity(intent);
+            }
+        });
 
         init1();
         loadCartFormFirebase();
